@@ -1,6 +1,7 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { useEffect, useMemo, useRef, useState } from 'react';
 
 import { AiLoadingScreen } from './components/AiLoadingScreen';
 import { ChildAACScreen } from './components/ChildAACScreen';
@@ -12,27 +13,40 @@ import { ParentQuestionScreen } from './components/ParentQuestionScreen';
 import { SpokenResponseScreen } from './components/SpokenResponseScreen';
 import { SummaryScreen } from './components/SummaryScreen';
 import { cardIdsForLabels, cardToId } from './data/cardCatalog';
+import { TOPICS } from './data/topics';
 import { requestAiCards, requestAiFollowups } from './logic/ai';
 import { getFollowupQuestions } from './logic/followups';
 import { loadChildProfile, profileToAiContext, recordConversationTurn, recordTopicUse, saveChildProfile } from './logic/profile';
 import { speak } from './logic/speech';
-import type { Card, ChildProfile, ConversationTurn, HistoryItem, LoadingDestination, Message, Screen, SessionSummary, Topic } from './types';
+import type { Card, ChildProfile, ConversationTurn, HistoryItem, LoadingDestination, Message, Screen, SessionSummary, Topic, TopicId } from './types';
 import { nowTime, todayLabel } from '../../lib/time';
 
-export function ConversationApp() {
-  const [screen, setScreen] = useState<Screen>('home');
-  const [topic, setTopic] = useState<Topic | null>(null);
+type ConversationAppProps = {
+  initialTopicId?: TopicId;
+  initialScreen?: 'home' | 'history';
+};
+
+export function ConversationApp({ initialTopicId, initialScreen = 'home' }: ConversationAppProps) {
+  const router = useRouter();
+  const routedTopic = initialTopicId
+    ? TOPICS.find((item) => item.id === initialTopicId) || null
+    : null;
+  const [screen, setScreen] = useState<Screen>(() => (
+    initialScreen === 'history' ? 'history' : routedTopic ? 'loading' : 'home'
+  ));
+  const [topic, setTopic] = useState<Topic | null>(routedTopic);
   const [questionIndex, setQuestionIndex] = useState(0);
-  const [currentQuestion, setCurrentQuestion] = useState('');
+  const [currentQuestion, setCurrentQuestion] = useState(routedTopic?.questions[0] || '');
   const [selectedCards, setSelectedCards] = useState<Card[]>([]);
   const [turns, setTurns] = useState<ConversationTurn[]>([]);
   const [selectedFollowupQuestion, setSelectedFollowupQuestion] = useState('');
   const [aiCards, setAiCards] = useState<Card[] | null>(null);
   const [aiFollowupQuestions, setAiFollowupQuestions] = useState<string[] | null>(null);
-  const [loadingTarget, setLoadingTarget] = useState<LoadingDestination | null>(null);
+  const [loadingTarget, setLoadingTarget] = useState<LoadingDestination | null>(routedTopic ? 'parent' : null);
   const [histories, setHistories] = useState<HistoryItem[]>([]);
   const [profile, setProfile] = useState<ChildProfile>(() => loadChildProfile());
-  const [sessionStart, setSessionStart] = useState<number | null>(null);
+  const [sessionStart] = useState<number | null>(() => routedTopic ? Date.now() : null);
+  const recordedRoutedTopic = useRef(false);
 
   useEffect(() => {
     try {
@@ -42,6 +56,26 @@ export function ConversationApp() {
       setHistories([]);
     }
   }, []);
+
+  useEffect(() => {
+    if (!routedTopic || recordedRoutedTopic.current) return;
+    recordedRoutedTopic.current = true;
+    setProfile((current) => {
+      const next = recordTopicUse(current, routedTopic);
+      saveChildProfile(next);
+      return next;
+    });
+  }, [routedTopic]);
+
+  useEffect(() => {
+    if (!routedTopic) return;
+    const timer = window.setTimeout(() => {
+      setScreen('parent');
+      setLoadingTarget(null);
+    }, 850);
+
+    return () => window.clearTimeout(timer);
+  }, [routedTopic]);
 
   const question = currentQuestion || topic?.questions?.[questionIndex] || '';
   const response = useMemo(() => selectedCards.map((item) => item[1]).join(' · '), [selectedCards]);
@@ -60,15 +94,6 @@ export function ConversationApp() {
   );
   const followupSuggestions = aiFollowupQuestions || fallbackFollowupSuggestions;
   const spokenResponse = screen === 'spoken' && response ? response : latestTurn?.response || response;
-
-  function showAiLoading(target: LoadingDestination): void {
-    setLoadingTarget(target);
-    setScreen('loading');
-    window.setTimeout(() => {
-      setScreen(target);
-      setLoadingTarget(null);
-    }, 850);
-  }
 
   function delay(ms: number): Promise<void> {
     return new Promise((resolve) => {
@@ -114,21 +139,7 @@ export function ConversationApp() {
   }
 
   function chooseTopic(chosen: Topic): void {
-    setTopic(chosen);
-    setQuestionIndex(0);
-    setCurrentQuestion(chosen.questions[0]);
-    setSelectedCards([]);
-    setAiCards(null);
-    setAiFollowupQuestions(null);
-    setTurns([]);
-    setSelectedFollowupQuestion('');
-    setSessionStart(Date.now());
-    setProfile((current) => {
-      const next = recordTopicUse(current, chosen);
-      saveChildProfile(next);
-      return next;
-    });
-    showAiLoading('parent');
+    router.push(`/topics/${chosen.id}`);
   }
 
   function pickQuestion(index: number | null, continueNow = false): void {
@@ -237,7 +248,7 @@ export function ConversationApp() {
     const next = [item, ...histories].slice(0, 12);
     setHistories(next);
     localStorage.setItem('talktogether-history', JSON.stringify(next));
-    setScreen('history');
+    router.push('/history');
   }
 
   function resetHome(): void {
@@ -249,13 +260,14 @@ export function ConversationApp() {
     setTurns([]);
     setSelectedFollowupQuestion('');
     setScreen('home');
+    router.push('/topics');
   }
 
   return (
     <div className="app-shell">
       <div className="ipad-stage">
         {screen === 'loading' && <AiLoadingScreen destination={loadingTarget} />}
-        {screen === 'home' && <HomeScreen onSelect={chooseTopic} onHistory={() => setScreen('history')} histories={histories} />}
+        {screen === 'home' && <HomeScreen onSelect={chooseTopic} onHistory={() => router.push('/history')} histories={histories} />}
         {screen === 'parent' && topic && (
           <ParentQuestionScreen
             topic={topic}
@@ -263,7 +275,7 @@ export function ConversationApp() {
             onPickQuestion={pickQuestion}
             onDone={() => pickQuestion(questionIndex, true)}
             onEndConversation={() => endConversation()}
-            onBack={() => setScreen('home')}
+            onBack={resetHome}
           />
         )}
         {screen === 'child' && topic && (
@@ -315,7 +327,7 @@ export function ConversationApp() {
         {screen === 'history' && (
           <HistoryScreen
             histories={histories}
-            onBack={() => setScreen('home')}
+            onBack={resetHome}
             onClear={() => {
               setHistories([]);
               localStorage.removeItem('talktogether-history');
