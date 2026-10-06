@@ -1,4 +1,4 @@
-import type { SyntheticEvent } from 'react';
+import { useMemo, useState, type SyntheticEvent } from 'react';
 
 import { PARENT_QUESTION_LIMIT } from '../data/constants';
 import { TOPICS } from '../data/topics';
@@ -12,8 +12,21 @@ type HomeScreenProps = {
 };
 
 const STICKER_LABELS = ['Vui', 'Rất thích', 'Tô màu', 'Cần giúp'] as const;
+const TOPICS_PER_PAGE = 4;
 
 export function HomeScreen({ onSelect, onHistory, histories }: HomeScreenProps) {
+  const [topicPageIndex, setTopicPageIndex] = useState(0);
+  const totalPages = Math.ceil(TOPICS.length / TOPICS_PER_PAGE);
+
+  const visibleTopics = useMemo(() => {
+    const start = topicPageIndex * TOPICS_PER_PAGE;
+    return TOPICS.slice(start, start + TOPICS_PER_PAGE);
+  }, [topicPageIndex]);
+
+  function handleCycleTopics() {
+    setTopicPageIndex((prev) => (prev + 1) % totalPages);
+  }
+
   return (
     <main className="screen home-screen polished-home">
       <header className="polished-home-topbar">
@@ -36,7 +49,12 @@ export function HomeScreen({ onSelect, onHistory, histories }: HomeScreenProps) 
           <p>Hôm nay con muốn học và trò chuyện về chủ đề gì nào? Hãy chọn một thẻ bên dưới nhé!</p>
         </div>
         <div className="polished-hero-actions">
-          <button className="spektrum-footer-button neutral" type="button" aria-label="Thêm chủ đề">
+          <button
+            className="spektrum-footer-button neutral"
+            onClick={handleCycleTopics}
+            type="button"
+            aria-label="Thêm chủ đề"
+          >
             <span aria-hidden="true">↻</span>
             <strong>Thêm chủ đề</strong>
           </button>
@@ -48,7 +66,7 @@ export function HomeScreen({ onSelect, onHistory, histories }: HomeScreenProps) 
       </section>
 
       <section className="topic-list polished-topic-list" aria-label="Chọn chủ đề trò chuyện">
-        {TOPICS.map((topic) => (
+        {visibleTopics.map((topic) => (
           <button
             key={topic.id}
             className="topic-card polished-topic-card"

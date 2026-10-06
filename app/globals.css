@@ -2832,6 +2832,30 @@ button:focus-visible { outline: 3px solid rgba(25, 118, 201, .24); outline-offse
   --topic-card-soft: #fff9dd;
 }
 
+.topic-card.polished-topic-card[data-topic="family"],
+.topic-card.polished-topic-card[data-topic="vehicles"] {
+  --topic-card-accent: var(--topic-blue);
+  --topic-card-soft: #eaf2ff;
+}
+
+.topic-card.polished-topic-card[data-topic="home"],
+.topic-card.polished-topic-card[data-topic="shopping"] {
+  --topic-card-accent: var(--topic-orange);
+  --topic-card-soft: #fff0e8;
+}
+
+.topic-card.polished-topic-card[data-topic="toys"],
+.topic-card.polished-topic-card[data-topic="park"] {
+  --topic-card-accent: var(--topic-green);
+  --topic-card-soft: #e9fbf3;
+}
+
+.topic-card.polished-topic-card[data-topic="health"],
+.topic-card.polished-topic-card[data-topic="animals"] {
+  --topic-card-accent: var(--topic-amber);
+  --topic-card-soft: #fff9dd;
+}
+
 .topic-card.polished-topic-card:active {
   transform: translateY(1px);
 }

@@ -106,6 +106,7 @@ export function ChildAACScreen({ topic, question, selected, aiCards, onToggle, o
                           aria-hidden="true"
                           onError={(event: SyntheticEvent<HTMLImageElement>) => {
                             event.currentTarget.hidden = true;
+                            event.currentTarget.style.display = 'none';
                             const fallback = event.currentTarget.nextElementSibling;
                             if (fallback instanceof HTMLElement) fallback.hidden = false;
                           }}

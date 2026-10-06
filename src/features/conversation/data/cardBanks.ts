@@ -196,6 +196,46 @@ export const CARD_BANKS = {
     action: [['🛝', 'Chơi cầu trượt'], ['💬', 'Kể chuyện'], ['✅', 'Làm xong'], ['🤲', 'Chia sẻ']],
     emotion: [['😀', 'Vui'], ['😌', 'Tự hào'], ['🤩', 'Rất thích'], ['😐', 'Bình thường']],
   },
+  familyHome: {
+    topic: [['👩', 'Mẹ'], ['👨', 'Ba'], ['👴', 'Ông'], ['👵', 'Bà']],
+    action: [['🤗', 'Muốn ôm'], ['💬', 'Nói chuyện'], ['🤝', 'Ngồi gần'], ['🤲', 'Chia sẻ']],
+    emotion: [['😀', 'Vui'], ['👍', 'Thích'], ['😌', 'An toàn'], ['😐', 'Bình thường']],
+  },
+  homeRoutine: {
+    topic: [['🏠', 'Ở nhà'], ['🛏️', 'Phòng ngủ'], ['🛋️', 'Chỗ nghỉ'], ['🤫', 'Chỗ yên tĩnh']],
+    action: [['🛋️', 'Nghỉ'], ['😴', 'Đi ngủ'], ['🧼', 'Đi tắm'], ['🎮', 'Trò chơi']],
+    emotion: [['😌', 'An toàn'], ['😀', 'Vui'], ['😴', 'Mệt'], ['🙂', 'Bình tĩnh']],
+  },
+  toysPlay: {
+    topic: [['🧸', 'Gấu bông'], ['🧩', 'Xếp hình'], ['🚗', 'Xe hơi'], ['🎨', 'Vẽ tranh']],
+    action: [['⚽️', 'Chơi'], ['🔁', 'Làm tiếp'], ['🤲', 'Chia sẻ'], ['⏹️', 'Dừng lại']],
+    emotion: [['🤩', 'Rất thích'], ['😀', 'Vui'], ['👍', 'Thích'], ['😐', 'Bình thường']],
+  },
+  healthBody: {
+    topic: [['🧍', 'Cơ thể'], ['🩺', 'Bác sĩ'], ['💧', 'Nước'], ['🛋️', 'Chỗ nghỉ']],
+    action: [['🛋️', 'Nghỉ'], ['💧', 'Uống nước'], ['🆘', 'Cần giúp'], ['🗣️', 'Nói nhỏ']],
+    emotion: [['😣', 'Đau'], ['😴', 'Mệt'], ['😣', 'Khó chịu'], ['😌', 'Đỡ hơn']],
+  },
+  parkOutdoor: {
+    topic: [['🌳', 'Công viên'], ['🛝', 'Cầu trượt'], ['🎪', 'Xích đu'], ['👫', 'Bạn bè']],
+    action: [['⚽️', 'Chơi'], ['🏃', 'Chạy'], ['🛝', 'Chơi cầu trượt'], ['🚶', 'Đi dạo']],
+    emotion: [['🤩', 'Hào hứng'], ['😀', 'Vui'], ['👍', 'Thích'], ['😴', 'Mệt']],
+  },
+  shoppingStore: {
+    topic: [['🛒', 'Siêu thị'], ['🥖', 'Bánh mì'], ['🍎', 'Trái cây'], ['🥛', 'Sữa']],
+    action: [['🛒', 'Mua sắm'], ['👉', 'Chọn món'], ['🚶', 'Đi dạo'], ['⏳', 'Chờ lượt']],
+    emotion: [['🤩', 'Rất thích'], ['😀', 'Vui'], ['👍', 'Thích'], ['😐', 'Bình thường']],
+  },
+  animalsPets: {
+    topic: [['🐶', 'Chó'], ['🐱', 'Mèo'], ['🦁', 'Động vật'], ['🌳', 'Công viên']],
+    action: [['🚶', 'Đi dạo'], ['🍽️', 'Cho ăn'], ['💬', 'Kể chuyện'], ['👀', 'Xem']],
+    emotion: [['🤩', 'Rất thích'], ['😀', 'Vui'], ['👍', 'Thích'], ['😨', 'Sợ']],
+  },
+  vehiclesRide: {
+    topic: [['🚗', 'Xe hơi'], ['🚌', 'Xe buýt'], ['🚲', 'Xe đạp'], ['✈️', 'Máy bay']],
+    action: [['🚶', 'Đi dạo'], ['👀', 'Xem'], ['💬', 'Kể chuyện'], ['⏹️', 'Dừng lại']],
+    emotion: [['🤩', 'Hào hứng'], ['😀', 'Vui'], ['👍', 'Thích'], ['😐', 'Bình thường']],
+  },
 } satisfies Record<string, CardBank>;
 
 export type CardBankKey = keyof typeof CARD_BANKS;
@@ -278,4 +318,12 @@ export const TOPIC_DEFAULT_CARD_BANK_KEYS: Record<TopicId, CardBankKey> = {
   food: 'foodMeals',
   activities: 'activitiesChoice',
   feelings: 'feelingsNow',
+  family: 'familyHome',
+  home: 'homeRoutine',
+  toys: 'toysPlay',
+  health: 'healthBody',
+  park: 'parkOutdoor',
+  shopping: 'shoppingStore',
+  animals: 'animalsPets',
+  vehicles: 'vehiclesRide',
 };
