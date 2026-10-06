@@ -1,5 +1,5 @@
-import { ConversationApp } from '../src/features/conversation/ConversationApp';
+import { redirect } from 'next/navigation';
 
 export default function Home() {
-  return <ConversationApp />;
+  redirect('/topics');
 }
