@@ -1,4 +1,16 @@
-export type TopicId = 'school' | 'food' | 'activities' | 'feelings';
+export type TopicId =
+  | 'school'
+  | 'food'
+  | 'activities'
+  | 'feelings'
+  | 'family'
+  | 'home'
+  | 'toys'
+  | 'health'
+  | 'park'
+  | 'shopping'
+  | 'animals'
+  | 'vehicles';
 export type CoreCardCategory = 'topic' | 'action' | 'emotion';
 export type CardCategory = CoreCardCategory | 'quick';
 export type Card = readonly [icon: string, label: string, category: CardCategory];
