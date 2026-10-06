@@ -35,10 +35,16 @@ export function HomeScreen({ onSelect, onHistory, histories }: HomeScreenProps) 
           <h1>Chào mừng con đến với Spektrum!</h1>
           <p>Hôm nay con muốn học và trò chuyện về chủ đề gì nào? Hãy chọn một thẻ bên dưới nhé!</p>
         </div>
-        <button className="polished-streak" onClick={onHistory} type="button" aria-label="Xem lịch sử trò chuyện">
-          <span aria-hidden="true">✦</span>
-          <strong>Chuỗi 5 ngày</strong>
-        </button>
+        <div className="polished-hero-actions">
+          <button className="spektrum-footer-button neutral" type="button" aria-label="Thêm chủ đề">
+            <span aria-hidden="true">↻</span>
+            <strong>Thêm chủ đề</strong>
+          </button>
+          <button className="polished-streak" onClick={onHistory} type="button" aria-label="Xem lịch sử trò chuyện">
+            <span aria-hidden="true">✦</span>
+            <strong>Chuỗi 5 ngày</strong>
+          </button>
+        </div>
       </section>
 
       <section className="topic-list polished-topic-list" aria-label="Chọn chủ đề trò chuyện">
