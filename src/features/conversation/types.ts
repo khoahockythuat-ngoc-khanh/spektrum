@@ -13,7 +13,7 @@ export type TopicId =
   | 'vehicles';
 export type CoreCardCategory = 'topic' | 'action' | 'emotion';
 export type CardCategory = CoreCardCategory | 'quick';
-export type Card = readonly [icon: string, label: string, category: CardCategory];
+export type Card = readonly [icon: string, label: string, category: CardCategory, imageUrl?: string];
 export type BankCard = readonly [icon: string, label: string];
 export type CardBank = Record<CoreCardCategory, readonly BankCard[]>;
 

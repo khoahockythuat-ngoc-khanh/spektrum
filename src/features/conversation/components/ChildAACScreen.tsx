@@ -8,6 +8,7 @@ import { getCardPageCount, getCardsForQuestion } from '../logic/cards';
 import { pictogramPath } from '../logic/pictograms';
 import type { Card, Topic } from '../types';
 import { TurnActionButtons } from './shared';
+import { DrawCardModal } from './DrawCardModal';
 
 type ChildAACScreenProps = {
   topic: Topic;
@@ -24,17 +25,25 @@ type ChildAACScreenProps = {
 
 export function ChildAACScreen({ topic, question, selected, aiCards, onToggle, onQuick, onReset, onSpeak, onEndConversation, onBack }: ChildAACScreenProps) {
   const [cardPage, setCardPage] = useState(0);
+  const [isDrawModalOpen, setIsDrawModalOpen] = useState(false);
+  const [customCards, setCustomCards] = useState<Card[]>([]);
+
   const fallbackPageCount = getCardPageCount(topic, question);
   const hasAiCards = Boolean(aiCards?.length);
   const cardPageCount = hasAiCards ? fallbackPageCount + 1 : fallbackPageCount;
   const cardsForQuestion = hasAiCards && cardPage === 0
     ? [...(aiCards || [])]
     : getCardsForQuestion(topic, question, hasAiCards ? cardPage - 1 : cardPage);
-  const cardColumns = CARD_CATEGORY_ORDER.map((category) => ({
-    category,
-    label: CATEGORY_LABELS[category],
-    cards: cardsForQuestion.filter((card) => card[2] === category).slice(0, 4),
-  }));
+
+  const cardColumns = CARD_CATEGORY_ORDER.map((category) => {
+    const categoryCustom = customCards.filter((c) => c[2] === category);
+    const baseCards = cardsForQuestion.filter((card) => card[2] === category);
+    return {
+      category,
+      label: CATEGORY_LABELS[category],
+      cards: [...categoryCustom, ...baseCards].slice(0, 4),
+    };
+  });
   const sentence = selected.map((card) => card[1]).join(' · ');
   const hasMoreCards = cardPageCount > 1;
 
@@ -101,7 +110,7 @@ export function ChildAACScreen({ topic, question, selected, aiCards, onToggle, o
                       <span className="aac-symbol">
                         <img
                           className="aac-pictogram"
-                          src={pictogramPath(card[1])}
+                          src={card[3] || pictogramPath(card[1])}
                           alt=""
                           aria-hidden="true"
                           onError={(event: SyntheticEvent<HTMLImageElement>) => {
@@ -141,6 +150,15 @@ export function ChildAACScreen({ topic, question, selected, aiCards, onToggle, o
               </button>
             );
           })}
+          <button
+            className="quick-draw-button"
+            onClick={() => setIsDrawModalOpen(true)}
+            type="button"
+            aria-label="Vẽ thẻ"
+          >
+            <span className="quick-icon">🎨</span>
+            <strong>Vẽ thẻ</strong>
+          </button>
         </div>
       </section>
 
@@ -173,6 +191,17 @@ export function ChildAACScreen({ topic, question, selected, aiCards, onToggle, o
           />
         </div>
       </footer>
+
+      <DrawCardModal
+        isOpen={isDrawModalOpen}
+        onClose={() => setIsDrawModalOpen(false)}
+        onSelectCard={(newCard) => {
+          setCustomCards((prev) => [newCard, ...prev.filter((c) => c[1] !== newCard[1])]);
+          onToggle(newCard);
+        }}
+        topic={topic}
+        question={question}
+      />
     </main>
   );
 }
