@@ -161,7 +161,10 @@ export function ConversationApp({ initialTopicId, initialScreen = 'home' }: Conv
   }
 
   function quickResponse(card: Card): void {
-    setSelectedCards([card]);
+    setSelectedCards((current) => {
+      const exists = current.some((item) => item[1] === card[1]);
+      return exists ? [] : [card];
+    });
   }
 
   function resetChildResponse(): void {
