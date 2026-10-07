@@ -138,9 +138,11 @@ export function ChildAACScreen({ topic, question, selected, aiCards, onToggle, o
         <div className="quick-row">
           {QUICK_RESPONSES.map(([icon, label]) => {
             const quickCard: Card = [icon, label, 'quick'];
+            const active = selected.some((item) => item[1] === label);
             return (
               <button
                 key={label}
+                className={active ? 'active' : ''}
                 onClick={() => onQuick(quickCard)}
                 type="button"
                 aria-label={`Trả lời nhanh: ${label}`}
